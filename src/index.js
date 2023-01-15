@@ -4,17 +4,34 @@ module.exports = function toReadable(number) {
   const teens = ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
   const dozens = ['ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
 
-  const findDozens = (num) => {
-    return dozens[num - 1];
+  const findDozens = (numberToWork) => {
+    let num = numberToWork.charAt(1);
+    return num == 0 ? dozens[numberToWork.charAt(0) - 1] : dozens[numberToWork.charAt(0) - 1] + ' ' + digits[numberToWork % 10];
+  };
+
+  const findNumberLength = () => {
+    if (numberToWork.length == 2) {
+      return findDozens(numberToWork);
+    } else if (numberToWork.length == 3) {
+      if (numberToWork.slice(1) == '00') {
+        return digits[numberToWork.charAt(0)] + ' hundred';
+      } else if (numberToWork.slice(1) > 19 || numberToWork.slice(1) == 10) {
+        return digits[numberToWork.charAt(0)] + ' hundred ' + findDozens(numberToWork.slice(1));
+      } else {
+        return digits[numberToWork.charAt(0)] + ' hundred ' + findUnicNamed(numberToWork.slice(1));
+      }
+    } else {
+      return digits[number];
+    }
+  };
+
+  const findUnicNamed = (num) => {
+    return num > 10 ? teens[(num % 10) - 1] : num.toString().length == 1 ? digits[num] : digits[num.charAt(1)];
   };
 
   if (number % 10 === 0) {
-    if (numberToWork.length === 2) {
-      return findDozens(numberToWork.charAt(0));
-    } else {
-      return numberToWork.charAt(1) == 0
-        ? digits[numberToWork.charAt(0)] + ' hundred'
-        : digits[numberToWork.charAt(0)] + ' hundred ' + findDozens(numberToWork.charAt(1));
-    }
+    return findNumberLength();
+  } else {
+    return number > 19 ? findNumberLength() : findUnicNamed(number);
   }
 };
